@@ -44,35 +44,19 @@
 					text-align: center;
 					z-index: 50;
 				}
-				.legend {
-					line-height: 18px;
-					color: #333333;
-					font-family: 'Open Sans', Helvetica, sans-serif;
-					padding: 6px 8px;
-					background: white;
-					background: rgba(255,255,255,0.8);
-					box-shadow: 0 0 15px rgba(0,0,0,0.2);
-					border-radius: 5px;
+				.panel-legend {
+			  		position: absolute;
+			  		bottom: 15px;
+				  	right: 15px;
+					margin-left: 60px;
+					text-align: center;
+					z-index: 50;
 				}
 				
-				.legend i {
+				.panel img {
 					width: 18px;
 					height: 18px;
 					float: left;
-					margin-right: 8px;
-					opacity: 0.7;
-				}
-				
-				.legend img {
-					width: 18px;
-					height: 18px;
-					float: left;
-				}
-				
-				.legend p {
-					font-size: 12px;
-					line-height: 18px;
-					margin: 0;
 				}
 
 			</style>
@@ -96,6 +80,18 @@
 			</div> 
 		</div>
 
+		<div class="panel group"></div>
+			<div class="panel panel-primary panel-legend">
+				<div class="panel-heading">
+			 	 	<h3 class="panel-title"><span class="title">Types of Stops</span></h3>
+		 	 	</div>
+		 	 	<div class="panel-body">
+						<img src="circle.png"><b>Pole</b>
+						<br /><img src="square.png"><b>Bench</b>
+						<br /><img src="star.png"><b>Shelter</b>
+				</div>
+			</div>
+		</div>
 
 <script>
 	//Create map
@@ -155,26 +151,6 @@ $.getJSON("lextranstops.geojson",function(data){
         }
     }).addTo(map);
 });
-
-// Create Leaflet Control Object for Legend
-var legend = L.control({position: 'bottomright'});
-
-// Function that runs when legend is added to map
-legend.onAdd = function (map) {
-
-	// Create Div Element and Populate it with HTML
-	var div = L.DomUtil.create('div', 'legend');		    
-	div.innerHTML += '<b>Types of Stops</b>';
-	div.innerHTML += '<br /><img src="circle.png">Pole';
-	div.innerHTML += '<br /><img src="square.png">Bench';
-	div.innerHTML += '<br /><img src="star.png">Shelter';
-
-	// Return the Legend div containing the HTML content
-	return div;
-};
-
-// Add Legend to Map
-legend.addTo(map);
 </script>
 
 	</body>
