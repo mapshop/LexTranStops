@@ -133,7 +133,7 @@
  var stopPoints = null;
  
 // Get GeoJSON and put on it on the map when it loads
-$.getJSON("lextranstops.geojson",function(data){
+$.getJSON("LexTranStops.geojson",function(data){
     // set stopPoints to the dataset, and add the bus stop GeoJSON layer to the map
     stopPoints = L.geoJson(data,{
         onEachFeature: function (feature, layer) {
