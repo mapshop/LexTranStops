@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<!-- add a title for the overall map page here -->
+		<title>LexTran Stop Locations</title>
+	
+		<!-- Leaflet stylesheet -->
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+	
+		<!-- JQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	
+		<!-- Latest compiled and minified Bootstrap -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	
+		<!-- Leaflet.js -->
+		<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	
+		<!-- Stamen Tiles -->
+		<script src="http://maps.stamen.com/js/tile.stamen.js"></script>
+	
+			<style>
+				html, body, #mapDiv {
+					height: 100%;
+					width: 100%;
+				}
+				.leaflet-popup-content-wrapper {
+					opacity: 0.9;
+					border-radius: 5px;
+				}
+			    .panel-fixed {
+			  		position: absolute;
+			  		top: 15px;
+				  	right: 15px;
+					margin-left: 60px;
+					width: 320px;
+					text-align: center;
+					z-index: 50;
+				}
+				.legend {
+					line-height: 18px;
+					color: #333333;
+					font-family: 'Open Sans', Helvetica, sans-serif;
+					padding: 6px 8px;
+					background: white;
+					background: rgba(255,255,255,0.8);
+					box-shadow: 0 0 15px rgba(0,0,0,0.2);
+					border-radius: 5px;
+				}
+				
+				.legend i {
+					width: 18px;
+					height: 18px;
+					float: left;
+					margin-right: 8px;
+					opacity: 0.7;
+				}
+				
+				.legend img {
+					width: 18px;
+					height: 18px;
+					float: left;
+				}
+				
+				.legend p {
+					font-size: 12px;
+					line-height: 18px;
+					margin: 0;
+				}
+
+			</style>
+	</head>
+	<body>
+		<div id='mapDiv'></div>
+
+		<div class="panel group">
+			<div class="panel panel-primary panel-fixed">
+			  <div class="panel-heading">
+			    <h3 class="panel-title"><span class="title">LexTran Bus Stops</span>  <a data-toggle="collapse" href="#collapse1"><span class="glyphicon glyphicon-chevron-down"></span></a>
+			    </h3>
+			  </div>
+			 <div id="collapse1" class="panel-collapse collapse">
+			 	 <div class="panel-body">
+			 	 	<span class="description">Three different types of stops were identified along the routes within the study area: <br>
+			 	 		Pole: sign indicating a bus stop, usually on post or light pole<br>
+						Bench: a bus stop with a bench<br>
+						Shelter: a bus stop with a covered enclosure</span>
+				 </div>
+			</div> 
+		</div>
+
+
+<script>
+	//Create map
+	var map = new L.map('mapDiv', {
+		//change the centering and zoom as needed
+		center: [38.055,-84.483],
+		zoom: 14,
+		minZoom: 10,
+		maxZoom: 17,
+		zoomControl: true,
+		dragging: true,
+	});
+
+	// Add tile layer
+	var layer = new L.StamenTileLayer("toner-lite");
+
+	map.addLayer(layer);
+	
+	//create some icons!
+	var starIcon = L.icon({
+            iconUrl: 'star.png',
+            iconSize: [18, 18],
+            iconAnchor: [18, 18],
+            popupAnchor: [-9, -17]
+        });
+    var squareIcon = L.icon({
+	        iconUrl: 'square.png',
+	        iconSize: [15, 15],
+	        iconAnchor: [15, 15],
+	        popupAnchor: [-7, -14]
+    	});
+    var circleIcon = L.icon({
+            iconUrl: 'circle.png',
+            iconSize: [18, 18],
+            iconAnchor: [18, 18],
+            popupAnchor: [-9, -17]
+    	});
+
+ var stopPoints = null;
+ 
+// Get GeoJSON and put on it on the map when it loads
+$.getJSON("lextranstops.geojson",function(data){
+    // set stopPoints to the dataset, and add the bus stop GeoJSON layer to the map
+    stopPoints = L.geoJson(data,{
+        onEachFeature: function (feature, layer) {
+        	var props = layer.feature.properties;
+            layer.bindPopup("<b>" + props.Name + "</b>" + "<br>" + "Route " + props.Route_Num + ", " + props.Route_Name);
+	      }, pointToLayer: function (feature, latlng) {
+            if (feature.properties.Type == "Shelter"){
+                var marker = L.marker(latlng,{icon: starIcon});
+            } else if (feature.properties.Type == "Pole"){
+                var  marker = L.marker(latlng,{icon: circleIcon});
+            } else {
+                var marker = L.marker(latlng,{icon: squareIcon})
+            };
+        return marker;
+        }
+    }).addTo(map);
+});
+
+// Create Leaflet Control Object for Legend
+var legend = L.control({position: 'bottomright'});
+
+// Function that runs when legend is added to map
+legend.onAdd = function (map) {
+
+	// Create Div Element and Populate it with HTML
+	var div = L.DomUtil.create('div', 'legend');		    
+	div.innerHTML += '<b>Types of Stops</b>';
+	div.innerHTML += '<br /><img src="circle.png">Pole';
+	div.innerHTML += '<br /><img src="square.png">Bench';
+	div.innerHTML += '<br /><img src="star.png">Shelter';
+
+	// Return the Legend div containing the HTML content
+	return div;
+};
+
+// Add Legend to Map
+legend.addTo(map);
+</script>
+
+	</body>
+</html>
