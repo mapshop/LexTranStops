@@ -1,19 +1,19 @@
 var baseLayer = new L.StamenTileLayer("toner-lite");
 
 var starIcon = L.icon({
-        iconUrl: '../img/star.png',
+        iconUrl: 'img/star.png',
         iconSize: [18, 18],
         iconAnchor: [18, 18],
         popupAnchor: [-9, -17]
     });
 var squareIcon = L.icon({
-        iconUrl: '../img/square.png',
+        iconUrl: 'img/square.png',
         iconSize: [18, 18],
         iconAnchor: [18, 18],
         popupAnchor: [-9, -17]
 	});
 var circleIcon = L.icon({
-        iconUrl: '../img/circle.png',
+        iconUrl: 'img/circle.png',
         iconSize: [18, 18],
         iconAnchor: [18, 18],
         popupAnchor: [-9, -17]
@@ -21,7 +21,7 @@ var circleIcon = L.icon({
 
 var pointLayer = null;
 
-$.getJSON("../data/LexTranStops.geojson",function(data){
+$.getJSON("data/LexTranStops.geojson",function(data){
 pointLayer = L.geoJson(data,{
     onEachFeature: function (feature, layer) {
     	var props = layer.feature.properties;
