@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Leaflet stylesheet -->
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+	<!-- JQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+	<!-- Latest compiled and minified Bootstrap -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+	<!-- Leaflet.js -->
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+	<!-- Stamen Tiles -->
+	<script src="http://maps.stamen.com/js/tile.stamen.js"></script>
+
+	<style>
+	html, body, #mapDiv {
+		height: 100%;
+		width: 100%;
+	}
+	.leaflet-popup-content-wrapper {
+		opacity: 0.9;
+		border-radius: 5px;
+	}
+    .panel-fixed {
+  		position: absolute;
+  		top: 15px;
+	  	right: 15px;
+		margin-left: 60px;
+		width: 320px;
+		text-align: center;
+		z-index: 50;
+	}
+	</style>
+</head>
+<body>
+	<div id='mapDiv'></div>
+
+		<div class="panel group">
+			<div class="panel panel-primary panel-fixed">
+			  <div class="panel-heading">
+			    <h3 class="panel-title"><span class="title">Loading...</span>  <a data-toggle="collapse" href="#collapse1"><span class="glyphicon glyphicon-chevron-down"></span></a>
+			    </h3>
+			  </div>
+			 <div id="collapse1" class="panel-collapse collapse">
+			 	 <div class="panel-body">
+			 	 	<span class="description"></span>
+				 </div>
+
+			</div> 
+			
+				<div class="panel-footer">
+				  		<a id="dataset-download-KML" href="" target="_new">Download KML</a> -
+				  		<a id="dataset-download-zip" href="" target="_new">Download .zip</a>
+				  		<a id="dataset-download-geoJSON" href="" target="_new">Download&nbsp;GeoJSON</a>
+				</div>
+		</div>
+		
+			<script>
+	//Create map
+	var map = new L.map('mapDiv', {
+		center: [38.055,-84.483],
+		zoom: 14,
+		minZoom: 10,
+		maxZoom: 17,
+		zoomControl: true,
+		dragging: true,
+	});
+	// Add tile layer
+	var layer = new L.StamenTileLayer("toner-lite");
+	map.addLayer(layer);
+       function getQueryParams(qs) {
+            qs = qs.split('+').join(' ');
+            var params = {},
+                tokens,
+                re = /[?&]?([^=]+)=([^&]*)/g;
+            while (tokens = re.exec(qs)) {
+                params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+            }
+            return params;
+        }
+        
+	
+	var queryId = getQueryParams(document.location.search).id;
+    // if(query.id !== undefined && query.id !== null) {
+    //     addGeoJsonLayer("https://raw.githubusercontent.com/geoiq/gc_data/master/datasets/"+ query.id +".geojson");
+    // }
+    
+//from SO
+	// var district_boundary = new L.geoJson();
+	// district_boundary.addTo(map);
+	var data;
+	
+	$.ajax({
+		dataType: "json",
+		url: queryId+".geojson",
+		success: function(ajaxData) {
+			console.log(ajaxData);
+			 data = ajaxData;
+			// Create data layer
+			var geoJSONLayer = L.geoJson(data, {
+				pointToLayer: function (feature, latlng) {
+					return L.circleMarker (latlng, {
+						radius: 4,
+						fillColor: "#2eb8b8",
+						color: "#000",
+						weight: 1,
+						opacity: 1,
+						fillOpacity: 0.8
+					});
+				},
+		
+		        onEachFeature: function(feature, layer) {   
+		            var props = layer.feature.properties;
+		            var popupcontent = "";
+		            
+		            $.each(props, function(fieldName, fieldValue){
+		            	popupcontent += "<b>"+fieldName+": </b>"+fieldValue + "<br/>";
+		            })
+		            
+		            layer.bindPopup(popupcontent);
+		                
+		        }
+		    }).addTo(map);
+		    
+		    
+		    $('.panel-title .title').text(data.metadata.title);
+		    $('.panel-body .description').html(data.metadata.description);
+		    
+    		$("#dataset-download-KML").attr("href", data.metadata.links.kml);
+    		$("#dataset-download-geoJSON").attr("href", data.metadata.links.geoJSON);
+    		$("#dataset-download-zip").attr("href", data.metadata.links.zip);
+    		
+    		$('#collapse1').on('hidden.bs.collapse', function () {
+			  $('.panel-title a .glyphicon').removeClass('glyphicon-chevron-up');
+			  $('.panel-title a .glyphicon').addClass('glyphicon-chevron-down');
+			})
+			
+			$('#collapse1').on('shown.bs.collapse', function () {
+			  $('.panel-title a .glyphicon').removeClass('glyphicon-chevron-down');
+			  $('.panel-title a .glyphicon').addClass('glyphicon-chevron-up');
+			})
+			
+		}
+	}).error(function() {});
+    
+</script>
+	</body>
+</html>web

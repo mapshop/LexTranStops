@@ -4,12 +4,13 @@
 		<meta charset="utf-8" />
 		
 		<title>LexTran Stop Locations</title>
+		
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="css/basic.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 		<script src="http://maps.stamen.com/js/tile.stamen.js"></script>
 	
@@ -99,6 +100,29 @@ $.getJSON("data/LexTranStops.geojson",function(data){
 	pointLayer.addTo(map);
 	
 });
+
+// var data;
+	
+	// $.ajax({
+	// 	dataType: "json",
+	// 	url: queryId+".geojson",
+	// 	success: function(ajaxData) {
+	// 		console.log(ajaxData);
+	// 		 data = ajaxData;
+		    
+    		
+ //   		$('#collapse1').on('hidden.bs.collapse', function () {
+	// 		  $('.panel-title a .glyphicon').removeClass('glyphicon-chevron-up');
+	// 		  $('.panel-title a .glyphicon').addClass('glyphicon-chevron-down');
+	// 		})
+			
+	// 		$('#collapse1').on('shown.bs.collapse', function () {
+	// 		  $('.panel-title a .glyphicon').removeClass('glyphicon-chevron-down');
+	// 		  $('.panel-title a .glyphicon').addClass('glyphicon-chevron-up');
+	// 		})
+			
+		
+	// }).error(function() {});
 
 	
 	
